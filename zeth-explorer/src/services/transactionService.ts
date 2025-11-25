@@ -8,6 +8,7 @@
 import { StargateClient, SigningStargateClient, GasPrice, defaultRegistryTypes } from '@cosmjs/stargate';
 import { DirectSecp256k1Wallet, Registry } from '@cosmjs/proto-signing';
 import { fromHex } from './walletService';
+import { Writer, Reader } from 'protobufjs/minimal';
 
 /**
  * 区块链配置
@@ -17,42 +18,49 @@ const CHAIN_ID = 'zethchain';
 
 /**
  * MsgMine Protobuf 编解码器
+ * 使用 protobufjs Writer 来正确编码消息
  */
 const MsgMineCodec = {
   // 编码函数 - 将消息对象编码为 protobuf 字节
-  encode: (message: any, writer = { uint32: () => writer, string: () => writer, finish: () => new Uint8Array(0) }) => {
-    // 简单的 protobuf 编码实现
+  encode: (message: any, writer: Writer = Writer.create()): Writer => {
     const creator = message.creator || '';
     const miner = message.miner || '';
 
-    // 手动构造 protobuf 消息
-    // field 1 (creator): tag = (1 << 3) | 2 = 10 (0x0a)
-    // field 2 (miner): tag = (2 << 3) | 2 = 18 (0x12)
-    const creatorBytes = new TextEncoder().encode(creator);
-    const minerBytes = new TextEncoder().encode(miner);
+    // field 1: creator (string)
+    if (creator !== '') {
+      writer.uint32(10).string(creator); // tag = (1 << 3) | 2 = 10
+    }
 
-    const result = new Uint8Array(
-      2 + creatorBytes.length + 2 + minerBytes.length
-    );
+    // field 2: miner (string)
+    if (miner !== '') {
+      writer.uint32(18).string(miner); // tag = (2 << 3) | 2 = 18
+    }
 
-    let offset = 0;
-    // field 1: creator
-    result[offset++] = 0x0a; // tag
-    result[offset++] = creatorBytes.length; // length
-    result.set(creatorBytes, offset);
-    offset += creatorBytes.length;
-
-    // field 2: miner
-    result[offset++] = 0x12; // tag
-    result[offset++] = minerBytes.length; // length
-    result.set(minerBytes, offset);
-
-    return result;
+    return writer;
   },
 
   // 解码函数
-  decode: (input: Uint8Array) => {
-    return { creator: '', miner: '' };
+  decode: (input: Uint8Array | Reader, length?: number) => {
+    const reader = input instanceof Reader ? input : new Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message: any = { creator: '', miner: '' };
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.miner = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
   },
 
   // fromPartial 方法 - CosmJS 需要这个

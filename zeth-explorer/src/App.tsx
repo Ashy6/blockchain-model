@@ -198,7 +198,7 @@ const App: React.FC = () => {
             {/* 版权信息 */}
             <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
               <p>
-                © 2024 ZETH 区块链 | 教育项目 |
+                © 2026 ZETH 区块链 | 教育项目 |
                 <a
                   href="https://github.com/cosmos/cosmos-sdk"
                   target="_blank"

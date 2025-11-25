@@ -403,7 +403,7 @@ export const zethToUzeth = (zeth: number): number => {
  *
  * 使用示例:
  * ```typescript
- * formatTime('2024-11-19T10:30:00Z') // "2024/11/19 18:30:00"
+ * formatTime('2026-11-19T10:30:00Z') // "2026/11/19 18:30:00"
  * formatTime('1700123456') // "2023/11/16 12:04:16"
  * ```
  */

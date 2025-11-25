@@ -14,7 +14,7 @@ describe('utils in api.ts', () => {
   });
 
   test('formatTime handles ISO and Unix timestamps', () => {
-    const iso = '2024-11-19T10:30:00Z';
+    const iso = '2026-11-19T10:30:00Z';
     expect(formatTime(iso)).toBe(new Date(iso).toLocaleString('zh-CN'));
 
     const unixSecStr = '1700123456';
