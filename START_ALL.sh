@@ -87,14 +87,14 @@ echo ""
 
 # 获取账户信息
 /Users/ashy/go/bin/zethchaind keys list --keyring-backend test 2>/dev/null | grep -E "name:|address:" | paste - - | while read line; do
-    NAME=$(echo "$line" | grep -oP 'name:\s*\K\w+')
-    ADDR=$(echo "$line" | grep -oP 'address:\s*\K\S+')
+    NAME=$(echo "$line" | awk '{for(i=1;i<=NF;i++){if($i=="name:"){print $(i+1);break}}}')
+    ADDR=$(echo "$line" | awk '{for(i=1;i<=NF;i++){if($i=="address:"){print $(i+1);break}}}')
     echo "${YELLOW}账户${NC}: $NAME"
     echo "  地址: ${GREEN}$ADDR${NC}"
     echo "  余额: 7000 ZETH (7000000000 uzeth)"
 
     # 导出私钥
-    PRIVATE_KEY=$(/Users/ashy/go/bin/zethchaind keys export $NAME --unarmored-hex --unsafe -y --keyring-backend test 2>&1 | tail -1)
+    PRIVATE_KEY=/Users/ashy/go/bin/zethchaind keys export $NAME --unarmored-hex --unsafe -y --keyring-backend test 2>&1 | tail -1
     echo "  私钥: ${RED}$PRIVATE_KEY${NC}"
     echo ""
 done

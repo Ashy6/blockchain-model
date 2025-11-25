@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 )
 
 // MiningRecord stores mining statistics for an address
@@ -26,22 +25,30 @@ func GetMiningRecordKey(address string) []byte {
 
 // SetMiningRecord sets the mining record for an address
 func (k Keeper) SetMiningRecord(ctx sdk.Context, address string, record MiningRecord) {
-	store := prefix.NewStore(ctx.KVStore(k.storeService.OpenKVStore(ctx)), MiningRecordKeyPrefix)
-
 	// Encode record
 	bz := make([]byte, 24) // 8 bytes for each field
 	binary.BigEndian.PutUint64(bz[0:8], uint64(record.LastMineTime))
 	binary.BigEndian.PutUint64(bz[8:16], record.TotalMined)
 	binary.BigEndian.PutUint64(bz[16:24], record.MineCount)
 
-	store.Set([]byte(address), bz)
+	// Get the store and set the value
+	kvStore := k.storeService.OpenKVStore(ctx)
+	key := GetMiningRecordKey(address)
+	if err := kvStore.Set(key, bz); err != nil {
+		panic(err)
+	}
 }
 
 // GetMiningRecord gets the mining record for an address
 func (k Keeper) GetMiningRecord(ctx sdk.Context, address string) (MiningRecord, bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeService.OpenKVStore(ctx)), MiningRecordKeyPrefix)
+	kvStore := k.storeService.OpenKVStore(ctx)
+	key := GetMiningRecordKey(address)
 
-	bz := store.Get([]byte(address))
+	bz, err := kvStore.Get(key)
+	if err != nil {
+		panic(err)
+	}
+
 	if bz == nil {
 		return MiningRecord{}, false
 	}
