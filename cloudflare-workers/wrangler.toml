@@ -1,0 +1,15 @@
+name = "zethchain-proxy"
+main = "src/index.js"
+compatibility_date = "2024-11-20"
+
+[vars]
+# 在 Cloudflare Dashboard 或 wrangler.toml 中设置你的后端源站地址
+# 例如：REST_ORIGIN = "https://your-host.example.com:1317"
+#       RPC_ORIGIN  = "https://your-host.example.com:26657"
+REST_ORIGIN = "http://localhost:1317"
+RPC_ORIGIN  = "http://localhost:26657"
+
+[routes]
+# 可选：绑定你的域名路由
+# pattern = "zethchain.example.com/*"
+# zone_id = "YOUR_ZONE_ID"
