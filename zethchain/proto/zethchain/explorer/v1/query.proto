@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package zethchain.explorer.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "zethchain/explorer/v1/params.proto";
+
+option go_package = "zethchain/x/explorer/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/zethchain/explorer/v1/params";
+  }
+
+  // ChainStats Queries a list of ChainStats items.
+  rpc ChainStats(QueryChainStatsRequest) returns (QueryChainStatsResponse) {
+    option (google.api.http).get = "/zethchain/explorer/v1/chain_stats";
+  }
+
+  // BlockInfo Queries a BlockInfo item.
+  rpc BlockInfo(QueryBlockInfoRequest) returns (QueryBlockInfoResponse) {
+    option (google.api.http).get = "/zethchain/explorer/v1/block/{height}";
+  }
+
+  // LatestBlocks Queries LatestBlocks items.
+  rpc LatestBlocks(QueryLatestBlocksRequest) returns (QueryLatestBlocksResponse) {
+    option (google.api.http).get = "/zethchain/explorer/v1/blocks/latest";
+  }
+
+  // DefaultAccounts Queries default account addresses.
+  rpc DefaultAccounts(QueryDefaultAccountsRequest) returns (QueryDefaultAccountsResponse) {
+    option (google.api.http).get = "/zethchain/explorer/v1/default_accounts";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// QueryChainStatsRequest defines the QueryChainStatsRequest message.
+message QueryChainStatsRequest {}
+
+// QueryChainStatsResponse defines the QueryChainStatsResponse message.
+message QueryChainStatsResponse {
+  uint64 block_height = 1;
+  string total_supply = 2;
+  uint64 validator_count = 3;
+}
+
+// QueryBlockInfoRequest defines the QueryBlockInfoRequest message.
+message QueryBlockInfoRequest {
+  uint64 height = 1;
+}
+
+// TransactionDetail defines detailed transaction information.
+message TransactionDetail {
+  string hash = 1;              // 交易哈希
+  string from = 2;              // 发送者地址
+  string to = 3;                // 接收者地址
+  string value = 4;             // 转账金额
+  string denom = 5;             // 代币类型
+  string gas_price = 6;         // Gas 价格
+  string gas_limit = 7;         // Gas 限制
+  string gas_used = 8;          // Gas 使用量
+  uint64 nonce = 9;             // Nonce
+  string input = 10;            // 合约调用数据/memo
+  string signature = 11;        // 签名信息（base64 编码）
+  int32 code = 12;              // 交易状态码（0 表示成功）
+  string log = 13;              // 交易日志
+}
+
+// QueryBlockInfoResponse defines the QueryBlockInfoResponse message.
+message QueryBlockInfoResponse {
+  uint64 block_height = 1;       // 区块高度（number）
+  string block_hash = 2;         // 区块哈希
+  string parent_hash = 3;        // 父区块哈希
+  string block_time = 4;         // 出块时间（timestamp）
+  string gas_limit = 5;          // 最大 gas 总量
+  string gas_used = 6;           // 实际消耗 gas
+  uint64 tx_count = 7;           // 交易数量
+  string proposer = 8;           // 提议者地址
+  repeated TransactionDetail transactions = 9;  // 交易详情列表
+}
+
+// QueryLatestBlocksRequest defines the QueryLatestBlocksRequest message.
+message QueryLatestBlocksRequest {
+  uint64 limit = 1;
+}
+
+// QueryLatestBlocksResponse defines the QueryLatestBlocksResponse message.
+message QueryLatestBlocksResponse {
+  string blocks = 1;
+}
+
+// QueryDefaultAccountsRequest defines the QueryDefaultAccountsRequest message.
+message QueryDefaultAccountsRequest {}
+
+// DefaultAccountInfo defines a default account's basic information.
+message DefaultAccountInfo {
+  string name = 1;
+  string address = 2;
+}
+
+// QueryDefaultAccountsResponse defines the QueryDefaultAccountsResponse message.
+message QueryDefaultAccountsResponse {
+  repeated DefaultAccountInfo accounts = 1;
+}

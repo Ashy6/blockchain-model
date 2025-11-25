@@ -1,0 +1,13 @@
+syntax = "proto3";
+package zethchain.mining.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "zethchain/x/mining/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "zethchain/x/mining/Params";
+  option (gogoproto.equal) = true;
+}

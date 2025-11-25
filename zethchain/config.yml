@@ -1,0 +1,23 @@
+version: 1
+validation: sovereign
+default_denom: uzeth
+accounts:
+- name: qa
+  coins:
+  - 7000000000uzeth
+- name: qb
+  coins:
+  - 7000000000uzeth
+- name: qc
+  coins:
+  - 7000000000uzeth
+client:
+  openapi:
+    path: docs/static/openapi.json
+faucet:
+  name: qb
+  coins:
+  - 100000000uzeth
+validators:
+- name: qa
+  bonded: 100000000uzeth

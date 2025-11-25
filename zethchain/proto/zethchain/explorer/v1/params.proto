@@ -1,0 +1,13 @@
+syntax = "proto3";
+package zethchain.explorer.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "zethchain/x/explorer/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "zethchain/x/explorer/Params";
+  option (gogoproto.equal) = true;
+}
