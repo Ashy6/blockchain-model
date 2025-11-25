@@ -15,6 +15,11 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/zethchain/mining/v1/params";
   }
+
+  // MiningHistory queries the mining history of a specific address.
+  rpc MiningHistory(QueryMiningHistoryRequest) returns (QueryMiningHistoryResponse) {
+    option (google.api.http).get = "/zethchain/mining/v1/mining_history";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -27,4 +32,16 @@ message QueryParamsResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+}
+
+// QueryMiningHistoryRequest is request type for the Query/MiningHistory RPC method.
+message QueryMiningHistoryRequest {
+  string address = 1;
+}
+
+// QueryMiningHistoryResponse is response type for the Query/MiningHistory RPC method.
+message QueryMiningHistoryResponse {
+  string last_mine_time = 1;  // Last mining timestamp (Unix seconds)
+  string total_mined = 2;      // Total amount mined (uzeth)
+  string mine_count = 3;       // Number of successful mines
 }

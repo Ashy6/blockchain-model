@@ -146,14 +146,27 @@ export class TransactionService {
     privateKeyHex: string
   ): Promise<any> {
     try {
+      // 清理私钥（去除空格、换行符等）
+      const cleanedPrivateKey = privateKeyHex.trim().replace(/\s+/g, '');
+
       // 验证私钥格式
-      if (!privateKeyHex || privateKeyHex.length !== 64) {
-        throw new Error('私钥格式错误：私钥必须是64位十六进制字符串');
+      if (!cleanedPrivateKey || cleanedPrivateKey.length !== 64) {
+        console.error('私钥格式错误:', {
+          原始长度: privateKeyHex?.length,
+          清理后长度: cleanedPrivateKey?.length,
+          私钥内容: cleanedPrivateKey,
+        });
+        throw new Error(`私钥格式错误：私钥必须是64位十六进制字符串（当前长度: ${cleanedPrivateKey?.length || 0}）`);
+      }
+
+      // 验证是否为有效的十六进制字符串
+      if (!/^[0-9a-fA-F]{64}$/.test(cleanedPrivateKey)) {
+        throw new Error('私钥格式错误：包含非十六进制字符');
       }
 
       // 1. 从十六进制私钥创建钱包
-      console.log('正在从私钥创建钱包...');
-      const privateKeyBytes = fromHex(privateKeyHex);
+      console.log('正在从私钥创建钱包...', '私钥长度:', cleanedPrivateKey.length);
+      const privateKeyBytes = fromHex(cleanedPrivateKey);
 
       if (privateKeyBytes.length !== 32) {
         throw new Error('私钥长度错误：应为32字节');
