@@ -3,15 +3,18 @@
  * 整合账户创建和账户列表功能
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import CreateAccount from './CreateAccount';
 import AccountList from './AccountList';
 import AccountDB from '../services/accountDB';
 import WalletService from '../services/walletService';
-import { getBalance, faucetCredit, getTxsByAddress, formatZETH, formatNumber, getDefaultAccounts } from '../services/api';
+import { getBalance, faucetCredit, getTxsByAddress, formatZETH, formatNumber } from '../services/api';
 import { Account } from '../types/account';
 
 type View = 'list' | 'create' | 'onchain';
+
+// 用于防止重复初始化的全局标记
+let isInitializing = false;
 
 const AccountManager: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('list');
@@ -23,47 +26,70 @@ const AccountManager: React.FC = () => {
   const [onChainBalances, setOnChainBalances] = useState<Record<string, { uzeth: string; stake: string }>>({});
   const [onChainTxs, setOnChainTxs] = useState<Record<string, any[]>>({});
 
-  // 使用 ref 确保初始化只执行一次
-  const hasInitialized = useRef(false);
-
   /**
-   * 初始化 - 从区块链同步默认账户
+   * 初始化默认账户（带防重复机制）
    */
-  const initializeAccountCount = async () => {
-    // 防止重复初始化
-    if (hasInitialized.current) {
+  const initializeDefaultAccounts = async () => {
+    // 防止并发初始化
+    if (isInitializing) {
+      console.log('初始化已在进行中，跳过');
       return;
     }
-    hasInitialized.current = true;
+
+    isInitializing = true;
 
     try {
-      // 从区块链获取默认账户列表
-      const defaultAccounts = await getDefaultAccounts();
+      const defaultNames = ['qa', 'qb', 'qc'];
 
-      // 检查并同步默认账户到 IndexedDB
-      for (const acc of defaultAccounts) {
-        const existing = await AccountDB.getAccountByAddress(acc.address);
-        if (!existing) {
-          // 该默认账户不存在于本地，创建它（不包含私钥，仅作为查看）
-          await AccountDB.addAccount({
-            name: acc.name,
-            address: acc.address,
-            privateKey: '', // 空，因为这是链上已有账户，前端仅查看
-            createdAt: new Date(),
-            onChain: true,
-          });
-          console.log(`已同步默认账户: ${acc.name} (${acc.address})`);
-        } else {
-          console.log(`默认账户已存在，跳过: ${acc.name} (${acc.address})`);
+      // 批量检查所有默认账户的存在性
+      const existsChecks = await Promise.all(
+        defaultNames.map(async (name) => ({
+          name,
+          exists: await AccountDB.isNameExists(name),
+        }))
+      );
+
+      // 只创建不存在的账户
+      const toCreate = existsChecks.filter((check) => !check.exists);
+
+      if (toCreate.length > 0) {
+        console.log(`需要创建 ${toCreate.length} 个默认账户`);
+
+        for (const { name } of toCreate) {
+          const account = await WalletService.createAccount(name);
+          await AccountDB.addAccount(account);
+          console.log(`默认账户 "${name}" 创建成功`);
+        }
+      } else {
+        console.log('所有默认账户已存在');
+      }
+
+      // 创建/存在后，尝试自动充值
+      const allAccounts = await AccountDB.getAllAccounts();
+      const targetAccounts = allAccounts.filter(acc => defaultNames.includes(acc.name));
+      for (const acc of targetAccounts) {
+        try {
+          const balances = await getBalance(acc.address);
+          const uzethBalance = balances.find((b: any) => b.denom === 'uzeth')?.amount || '0';
+          if (BigInt(uzethBalance) < BigInt(100000000)) { // 少于 100 ZETH
+            console.log(`为默认账户 ${acc.name}(${acc.address}) 充值 100 ZETH...`);
+            await faucetCredit(acc.address, '100000000uzeth');
+          } else {
+            console.log(`默认账户 ${acc.name} 余额已达标: ${uzethBalance} uzeth`);
+          }
+        } catch (e) {
+          console.warn(`自动充值默认账户 ${acc.name} 失败:`, e);
         }
       }
 
-      const count = await AccountDB.getAccountCount();
-      setAccountCount(count);
+      const newCount = await AccountDB.getAccountCount();
+      setAccountCount(newCount);
       setIsInitialized(true);
     } catch (error) {
-      console.error('初始化失败:', error);
-      setIsInitialized(true);
+      console.error('初始化账户失败:', error);
+      setIsInitialized(true); // 即使失败也标记为已初始化
+    } finally {
+      isInitializing = false;
     }
   };
 
@@ -71,7 +97,7 @@ const AccountManager: React.FC = () => {
    * 组件挂载时初始化
    */
   useEffect(() => {
-    initializeAccountCount();
+    initializeDefaultAccounts();
   }, []);
 
   useEffect(() => {

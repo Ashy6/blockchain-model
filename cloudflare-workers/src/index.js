@@ -1,5 +1,3 @@
-import type { Env } from './types';
-
 // Simple reverse proxy worker for ZETH chain REST/RPC/Faucet
 // Routes:
 // - /rest/*   -> forwards to REST_ORIGIN

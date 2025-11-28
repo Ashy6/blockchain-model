@@ -8,8 +8,6 @@ compatibility_date = "2024-11-20"
 #       RPC_ORIGIN  = "https://your-host.example.com:26657"
 REST_ORIGIN = "http://localhost:1317"
 RPC_ORIGIN  = "http://localhost:26657"
+FAUCET_ORIGIN = "http://localhost:4500"
 
-[routes]
-# 可选：绑定你的域名路由
-# pattern = "zethchain.example.com/*"
-# zone_id = "YOUR_ZONE_ID"
+# 若需绑定到自己的域名，请参考 Cloudflare Dashboard 添加 [[routes]] 配置

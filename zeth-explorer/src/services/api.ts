@@ -185,64 +185,8 @@ export const getBalance = async (address: string): Promise<Balance[]> => {
  * @returns {Promise<Balance>} ZETH 总供应量
  */
 export const getTotalSupply = async (): Promise<Balance> => {
-  try {
-    // 方法1：尝试使用 supply by denom API
-    const response = await axios.get(`${REST_API}/cosmos/bank/v1beta1/supply/uzeth`);
-    if (response.data.amount) {
-      return response.data.amount;
-    }
-  } catch (error) {
-    console.log('方法1失败，尝试方法2');
-  }
-
-  try {
-    // 方法2：获取所有供应量，然后找到 uzeth
-    const response = await axios.get(`${REST_API}/cosmos/bank/v1beta1/supply`);
-    const supplies = response.data.supply || [];
-    const uzethSupply = supplies.find((s: Balance) => s.denom === 'uzeth');
-    if (uzethSupply) {
-      return uzethSupply;
-    }
-  } catch (error) {
-    console.log('方法2失败，尝试方法3');
-  }
-
-  try {
-    // 方法3：通过查询所有账户余额来计算总供应量
-    // 这是一个备用方案，但可能不准确
-    const response = await axios.get(`${REST_API}/cosmos/bank/v1beta1/supply`);
-    return response.data.amount || { denom: 'uzeth', amount: '0' };
-  } catch (error) {
-    console.error('获取总供应量失败:', error);
-    // 返回默认值
-    return { denom: 'uzeth', amount: '0' };
-  }
-};
-
-/**
- * 获取默认账户列表（qa, qb, qc）
- *
- * @returns {Promise<Array<{name: string, address: string}>>} 默认账户列表
- *
- * 使用示例:
- * ```typescript
- * const accounts = await getDefaultAccounts();
- * // [{ name: 'qa', address: 'zeth1...' }, ...]
- * ```
- */
-export interface DefaultAccountInfo {
-  name: string;
-  address: string;
-}
-
-export const getDefaultAccounts = async (): Promise<DefaultAccountInfo[]> => {
-  try {
-    const response = await axios.get(`${REST_API}/zethchain/explorer/v1/default_accounts`);
-    return response.data.accounts || [];
-  } catch (error) {
-    console.error('Failed to fetch default accounts:', error);
-    return [];
-  }
+  const response = await axios.get(`${REST_API}/cosmos/bank/v1beta1/supply/uzeth`);
+  return response.data.amount;
 };
 
 // ==================== 交易相关 API ====================
@@ -403,7 +347,7 @@ export const zethToUzeth = (zeth: number): number => {
  *
  * 使用示例:
  * ```typescript
- * formatTime('2026-11-19T10:30:00Z') // "2026/11/19 18:30:00"
+ * formatTime('2024-11-19T10:30:00Z') // "2024/11/19 18:30:00"
  * formatTime('1700123456') // "2023/11/16 12:04:16"
  * ```
  */
