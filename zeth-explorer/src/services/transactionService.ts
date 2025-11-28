@@ -13,7 +13,7 @@ import { Writer, Reader } from 'protobufjs/minimal';
 /**
  * 区块链配置
  */
-const RPC_ENDPOINT = 'http://localhost:26657';
+const RPC_ENDPOINT = (process.env.REACT_APP_RPC_API as string) || (process.env.NODE_ENV === 'production' ? 'https://zethchain-proxy.zengjx1998.workers.dev/rpc' : 'http://localhost:26657');
 const CHAIN_ID = 'zethchain';
 
 /**

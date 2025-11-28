@@ -1,197 +1,18 @@
 [K[?25l[?2004h
-  ◣ Initializing...
-  
-  Press the 'q' key to stop serve
-
-[D[5A
-  ◤ Initializing...
-
-
-
-[D[5A
   Cosmos SDK's version is: v0.53.3
-
-  ◥ Initializing...
+  
+  ◤ Initializing...
   
   Press the 'q' key to stop serve
 
 [D[7A
 
 
-  ◢ Initializing...
-
-
-
-[D[7A
-
-
-  ◣ Restarting existing app...
+  ◥ Restarting existing app...
 
   ✔ Initializing 0s
   
   Press the 'q' key to stop serve
-
-[D[9A
-
-
-  ◤ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◥ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◢ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◣ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◤ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◥ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◢ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◣ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◤ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◥ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◢ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◣ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◤ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◥ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◢ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◣ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◤ Restarting existing app...
-
-
-
-
-
-[D[9A
-
-
-  ◥ Restarting existing app...
-
-
-
-
 
 [D[9A
 
@@ -223,22 +44,9 @@
   🌍 Blockchain API: http://0.0.0.0:1317
   🌍 Token faucet: http://0.0.0.0:4500
   
-  Press the 'q' key to stop serve
-
-[D[13A
-
-
-
-
-
-
-
-
-
-
   ⋆ Data directory: /Users/ashy/.zethchain
   ⋆ App binary: /Users/ashy/go/bin/zethchaind
   
   Press the 'q' key to stop serve
 
-[D[2K[?2004l[?25h[?1002l[?1003l[?1006l
+[D

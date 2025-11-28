@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const REST_API = 'http://localhost:1317';
+const REST_API = (process.env.REACT_APP_REST_API as string) || (process.env.NODE_ENV === 'production' ? 'https://zethchain-proxy.zengjx1998.workers.dev/rest' : 'http://localhost:1317');
 
 // 区块信息接口
 interface BlockInfo {

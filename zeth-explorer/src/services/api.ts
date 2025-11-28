@@ -9,10 +9,10 @@ import axios from 'axios';
 
 // ==================== API 配置 ====================
 // REST API 地址 - Cosmos SDK 提供的 REST 接口
-const REST_API = process.env.REACT_APP_REST_API || 'http://localhost:1317';
+const REST_API = process.env.REACT_APP_REST_API || (process.env.NODE_ENV === 'production' ? 'https://zethchain-proxy.zengjx1998.workers.dev/rest' : 'http://localhost:1317');
 
 // RPC API 地址 - Tendermint RPC 接口
-const RPC_API = process.env.REACT_APP_RPC_API || 'http://localhost:26657';
+const RPC_API = process.env.REACT_APP_RPC_API || (process.env.NODE_ENV === 'production' ? 'https://zethchain-proxy.zengjx1998.workers.dev/rpc' : 'http://localhost:26657');
 
 // 链 ID
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID || 'zethchain';
@@ -415,7 +415,7 @@ export const faucetCredit = async (
   uzethAmount: string = '100000000uzeth'
 ): Promise<any> => {
   try {
-    const faucetUrl = process.env.REACT_APP_FAUCET_API || 'http://localhost:4500';
+    const faucetUrl = process.env.REACT_APP_FAUCET_API || (process.env.NODE_ENV === 'production' ? 'https://zethchain-proxy.zengjx1998.workers.dev/faucet' : 'http://localhost:4500');
     const response = await axios.post(faucetUrl, {
       address,
       coins: [uzethAmount]
